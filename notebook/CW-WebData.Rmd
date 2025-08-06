@@ -63,8 +63,13 @@ print(revenue_summary)
 ```{r}
 ggplot(revenue_summary, aes(x = factor(Year), y = total_revenue, fill = Source...Medium)) +
   geom_col(position = "dodge") +
-  labs(title = "Revenue by Year for Top 3 Traffic Sources", x = "Year", y = "Total Revenue") +
+  geom_text(aes(label = round(total_revenue, 1)), 
+            position = position_dodge(width = 0.9), 
+            vjust = -0.3, size = 3) +
+  labs(title = "Revenue by Year for Top 3 Traffic Sources", 
+       x = "Year", y = "Total Revenue") +
   theme_minimal()
+
 ```
 
 ### Comment:
@@ -163,6 +168,51 @@ print(summary_new_users_by_total)
 ```
 
 ## Step 6 : Chart
+
+```{r}
+# Gộp tổng theo thiết bị
+summary_total_users_device <- summary_users %>%
+  group_by(Device) %>%
+  summarise(TotalUsers = sum(TotalUsers, na.rm = TRUE))
+head(summary_total_users_device, 6)
+summary_users_by_total <- summary_total_users_device %>% arrange(desc(TotalUsers))
+summary_top6_total_users <- summary_users_by_total %>%
+  group_by(Device) %>%
+  summarise(TotalUsers = sum(TotalUsers, na.rm = TRUE)) %>%
+  arrange(desc(TotalUsers)) %>%
+  slice_head(n = 6)
+
+# Vẽ biểu đồ
+ggplot(summary_top6_total_users, aes(x = Device, y = TotalUsers, fill = Device)) +
+  geom_col() +
+  geom_text(aes(label = TotalUsers), vjust = -0.3, size = 3) +
+  labs(title = "Total Users by Device",
+       x = "Device", y = "Total Users") +
+  theme_minimal()
+```
+
+```{r}
+# Gộp tổng người dùng mới theo thiết bị
+summary_new_users_device <- summary_users %>%
+  group_by(Device) %>%
+  summarise(TotalNewUsers = sum(TotalNewUsers, na.rm = TRUE))
+
+# Sắp theo TotalNewUsers
+summary_new_users_by_total <- summary_new_users_device %>% arrange(desc(TotalNewUsers))
+summary_top6_total_users <- summary_new_users_by_total %>%
+  group_by(Device) %>%
+  summarise(TotalNewUsers = sum(TotalNewUsers, na.rm = TRUE)) %>%
+  arrange(desc(TotalNewUsers)) %>%
+  slice_head(n = 6)
+
+# Vẽ biểu đồ
+ggplot(summary_top6_total_users, aes(x = Device, y = TotalNewUsers, fill = Device)) +
+  geom_col() +
+  geom_text(aes(label = TotalNewUsers), vjust = -0.3, size = 3) +
+  labs(title = "New Users by Device",
+       x = "Device", y = "New Users") +
+  theme_minimal()
+```
 
 ```{r}
 

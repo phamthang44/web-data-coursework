@@ -1,0 +1,5 @@
+"0","# Gộp tổng theo thiết bị"
+"0","summary_total_users_device <- summary_users %>%"
+"0","  group_by(Device) %>%"
+"0","  summarise(TotalUsers = sum(TotalUsers, na.rm = TRUE))"
+"0","head(summary_total_users_device, 6)"

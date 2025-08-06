@@ -1,0 +1,7 @@
+"0","# Vẽ biểu đồ"
+"0","ggplot(summary_top6_total_users, aes(x = Device, y = TotalUsers, fill = Device)) +"
+"0","  geom_col() +"
+"0","  geom_text(aes(label = TotalUsers), vjust = -0.3, size = 3) +"
+"0","  labs(title = ""Total Users by Device"","
+"0","       x = ""Device"", y = ""Total Users"") +"
+"0","  theme_minimal()"
