@@ -1,0 +1,22 @@
+"0","library(gridExtra)  # để gộp biểu đồ"
+"0",""
+"0","# Gộp biểu đồ"
+"0","plot_list <- list()"
+"0",""
+"0","for (col in names(data)) {"
+"0","  if (is.numeric(data[[col]])) {"
+"0","    p <- ggplot(data, aes(x = !!sym(col))) +"
+"0","      geom_histogram(bins = 30, fill = ""steelblue"", color = ""white"") +"
+"0","      labs(title = paste(""Histogram of"", col, ""before cleaning"")) +"
+"0","      theme_minimal() +"
+"0","      theme(plot.title = element_text(size = 7))"
+"0","    plot_list[[col]] <- p"
+"0","  }"
+"0","}"
+"2","G1;H1;Errorh in ggplot(data, aes(x = !!sym(col))) : 
+  could not find function ""ggplot""
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"
+"0","# Hiển thị 4 biểu đồ/lần"
+"0","grid.arrange(grobs = plot_list[1:4], ncol = 2)"

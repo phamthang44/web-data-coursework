@@ -1,0 +1,6 @@
+"0","library(readr)  # For reading CSV files"
+"0","library(dplyr)  # For data manipulation"
+"0","library(ggplot2)  # For plotting"
+"0","library(GGally)"
+"2","G2;H2;Warningh: package ‘GGally’ was built under R version 4.5.1g
+"

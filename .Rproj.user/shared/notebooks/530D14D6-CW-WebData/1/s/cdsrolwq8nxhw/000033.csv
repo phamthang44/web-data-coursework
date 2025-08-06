@@ -1,0 +1,13 @@
+"0","revenue_summary <- data %>%"
+"0","  group_by(Year, Source...Medium) %>%"
+"0","  summarise(total_revenue = sum(Revenue, na.rm = TRUE)) %>%"
+"0","  arrange(Year, desc(total_revenue)) %>%"
+"0","  group_by(Year) %>%"
+"0","  slice_head(n = 3) %>%"
+"0","  ungroup()"
+"2","[38;5;232m`summarise()` has grouped output by 'Year'. You can override using the `.groups` argument.[39m
+"
+"0","filtered_data <- data %>%"
+"0","  semi_join(revenue_summary, by = c(""Year"", ""Source...Medium""))"
+"0",""
+"0","print(revenue_summary)"

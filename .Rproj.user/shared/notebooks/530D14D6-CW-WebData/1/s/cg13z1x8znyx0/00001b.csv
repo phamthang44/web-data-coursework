@@ -1,0 +1,6 @@
+"0",""
+"0","# Total Users"
+"0","ggplot(summary_users, aes(x = factor(Year), y = TotalUsers, fill = Device)) +"
+"0","  geom_col(position = ""dodge"") +"
+"0","  labs(title = ""Total Users by Device and Year"", x = ""Year"", y = ""Total Users"", fill = ""Device"") +"
+"0","  theme_minimal()"

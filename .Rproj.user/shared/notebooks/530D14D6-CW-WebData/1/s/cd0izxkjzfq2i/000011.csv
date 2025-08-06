@@ -1,0 +1,4 @@
+"2","G1;[1m[33mError[39m in `gtable_add_grob()`:[22m
+[33m![39m `grobs` must be a single grob or a list of grobs, not a list.
+[90mRun `]8;;x-r-run:rlang::last_trace()rlang::last_trace()]8;;` to see where the error occurred.[39m
+g"

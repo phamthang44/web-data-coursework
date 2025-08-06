@@ -1,0 +1,17 @@
+"0",""
+"0",""
+"0","# Độ lệch của Insulin (sau khi bỏ 0)"
+"0","skewness(data_d$Insulin[data_d$Insulin != 0])"
+"1","[1] 2.149996
+"
+"0","skewness(data_d$BMI[data_d$BMI != 0])"
+"1","[1] 0.5916179
+"
+"0","skewness(data_d$Glucose[data_d$Glucose != 0])"
+"1","[1] 0.5289026
+"
+"0","#≈ 0 → phân phối chuẩn → có thể dùng mean"
+"0",""
+"0","#1 hoặc < -1 → lệch nặng → dùng median"
+"0",""
+"0","#0.5 – 1 → lệch nhẹ"

@@ -1,0 +1,9 @@
+"0","cor(data$BounceRate, data$ConversionRate, use = ""complete.obs"")"
+"1","[1] -0.4710521
+"
+"0","cor(data$Transactions, data$Revenue, use = ""complete.obs"")"
+"1","[1] 0.9817405
+"
+"0","cor(data$ConversionRate, data$Revenue, use = ""complete.obs"")"
+"1","[1] 0.3512932
+"

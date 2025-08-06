@@ -1,0 +1,4 @@
+"0","cols_to_clean <- c(""Users"", ""New.Users"", ""Sessions"", ""Pageviews"", "
+"0","                   ""Transactions"", ""Revenue"", ""Quantity.Sold"")"
+"0",""
+"0","data[cols_to_clean] <- lapply(data[cols_to_clean], function(x) as.numeric(gsub("","", """", x)))"

@@ -1,0 +1,3 @@
+"0",""
+"0","bmi_median <- median(data$BMI, na.rm = TRUE)"
+"0","data_d$BMI[is.na(data_d$BMI)] <- bmi_median"

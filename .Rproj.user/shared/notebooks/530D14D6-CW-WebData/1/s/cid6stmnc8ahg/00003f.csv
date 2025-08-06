@@ -1,0 +1,19 @@
+"0","sum(data_d$Glucose == 0)"
+"1","[1] 0
+"
+"0","sum(data_d$BloodPressure == 0)"
+"1","[1] 0
+"
+"0","sum(data_d$BMI == 0)"
+"1","[1] 0
+"
+"0","sum(data_d$Insulin == 0)"
+"1","[1] 0
+"
+"0","sum(data_d$Pregnancies == 0)"
+"1","[1] 0
+"
+"0","sum(data_d$SkinThickness == 0)"
+"1","[1] 0
+"
+"0","data_d"

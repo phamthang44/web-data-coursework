@@ -1,0 +1,4 @@
+"0","ggplot(revenue_summary, aes(x = factor(Year), y = total_revenue, fill = Source...Medium)) +"
+"0","  geom_col(position = ""dodge"") +"
+"0","  labs(title = ""Revenue by Year for Top 3 Traffic Sources"", x = ""Year"", y = ""Total Revenue"") +"
+"0","  theme_minimal()"

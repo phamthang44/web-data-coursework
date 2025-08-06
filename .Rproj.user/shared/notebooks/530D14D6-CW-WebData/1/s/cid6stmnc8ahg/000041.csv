@@ -1,0 +1,6 @@
+"0",""
+"0","sum(data_d$BMI < 10)"
+"1","[1] 11
+"
+"0","data_d$BMI[data_d$BMI < 10] <- NA"
+"0","data_d"

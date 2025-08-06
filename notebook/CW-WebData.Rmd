@@ -1,0 +1,540 @@
+---
+title: "CW-WebData"
+author: "Pham Duc Thang"
+date: "2025-07-07"
+output: pdf_document
+---
+
+# Task 1a - Comparative Analysis of Traffic Sources
+
+## Step 0 : Load library
+
+```{r}
+library(tidyverse)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(scales)
+```
+
+## Step 1 : Load data
+
+```{r}
+data <- read.csv("../data/Web Analytic_Dataset.csv")
+data
+```
+
+## Step 2 : Explore Dataset
+
+```{r}
+str(data)
+summary(data)
+```
+
+## Step 3 : Pre-process, cleaning data
+
+```{r}
+cols_to_clean <- c("Users", "New.Users", "Sessions", "Pageviews", 
+                   "Transactions", "Revenue", "Quantity.Sold")
+
+data[cols_to_clean] <- lapply(data[cols_to_clean], function(x) as.numeric(gsub(",", "", x)))
+```
+
+## Step 4 : Find Top 3 Sources by Revenue by each year
+
+```{r}
+revenue_summary <- data %>%
+  group_by(Year, Source...Medium) %>%
+  summarise(total_revenue = sum(Revenue, na.rm = TRUE)) %>%
+  arrange(Year, desc(total_revenue)) %>%
+  group_by(Year) %>%
+  slice_head(n = 3) %>%
+  ungroup()
+
+filtered_data <- data %>%
+  semi_join(revenue_summary, by = c("Year", "Source...Medium"))
+
+print(revenue_summary)
+
+```
+
+## Step 5 Draw the chart Revenue by year and Sources
+
+```{r}
+ggplot(revenue_summary, aes(x = factor(Year), y = total_revenue, fill = Source...Medium)) +
+  geom_col(position = "dodge") +
+  labs(title = "Revenue by Year for Top 3 Traffic Sources", x = "Year", y = "Total Revenue") +
+  theme_minimal()
+```
+
+### Comment:
+
+**Source A** consistently led in revenue for both 2019 and 2020. It generated **£335,498** in 2019 and nearly **tripled** to **£958,638** in 2020 — indicating a strong and accelerating upward trend.
+
+**Source B** showed **steady growth**, with revenue increasing from **£191,107** in 2019 to **£349,585** in 2020. This suggests consistent performance and potential for continued development. v
+
+**Source S** had the **lowest revenue** in 2019 (**£167,526**), but showed significant improvement in 2020, rising to **£551,656** a **4x increase**. This propelled it to become the second-highest revenue source that year, highlighting its strong growth potential.
+
+Overall, while source A remains dominant, Source S demonstrated the most significant growth, suggesting shifting dynamics among top traffic sources.
+
+### Conclusion:
+
+Source **A** not only consistently generates the highest revenue but also demonstrates strong year-on-year growth. This suggests that it attracts high-quality traffic and remains a key performer. Marketing investments in this channel should be sustained or even increased to maximize returns.
+
+Source **B** exhibits steady growth over time, indicating stable performance. Further analysis on user behavior and conversion rates could reveal opportunities for optimization.
+
+Source **S**, despite its modest revenue in 2019, showed a dramatic improvement in 2020. Its rapid growth highlights potential as an emerging high-value source, warranting closer attention and possibly increased investment.
+
+# Task 1b - Device Usage and Conversion
+
+## Case 1 - Use Source / Medium as Device
+
+## Step 0 : Load libraries
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(knitr)
+library(ggplot2)
+```
+
+## Step 1 : Load data
+
+```{r}
+data <- read.csv("../data/Web Analytic_Dataset.csv")
+data
+```
+
+## Step 2 : Explore dataset
+
+```{r}
+str(data)
+summary(data)
+```
+
+## Step 3 : Pre-process
+
+```{r}
+cols_to_clean <- c("Users", "New.Users", "Sessions", "Pageviews", 
+                   "Transactions", "Revenue", "Quantity.Sold", "Conversion.Rate....")
+
+data[cols_to_clean] <- lapply(data[cols_to_clean], function(x) as.numeric(gsub(",", "", x)))
+
+names(data)[names(data) == "Source...Medium"] <- "Device"
+names(data)[names(data) == "Conversion.Rate...."] <- "ConversionRate"
+
+#data <- data %>%
+ # mutate(
+ #   YearMonth = paste0(Year, "-", sprintf("%02d", Month.of.the.year)),
+#    Device = Source...Medium
+#  )
+data
+```
+
+## Step 4 : Summary by month, year, device (Source...Medium)
+
+```{r}
+# Users / New Users theo Device (Source/Medium)
+summary_users <- data %>%
+  group_by(Device, Year) %>%
+  summarise(
+    TotalUsers = sum(Users, na.rm = TRUE),
+    TotalNewUsers = sum(New.Users, na.rm = TRUE),
+    .groups = "drop"
+  ) 
+
+# Sắp theo TotalUsers
+summary_users_by_total <- summary_users %>% arrange(desc(TotalUsers))
+
+# Sắp theo TotalNewUsers
+summary_new_users_by_total <- summary_users %>% arrange(desc(TotalNewUsers))
+
+```
+
+## Step 5 : Table
+
+```{r}
+head(summary_users_by_total, 6)
+head(summary_new_users_by_total, 6)
+print(summary_users_by_total)
+print(summary_new_users_by_total)
+#print(summary_grouped)
+#kable(summary_users, caption = "Total Users and New Users per Device by Year")
+```
+
+## Step 6 : Chart
+
+```{r}
+
+# Total Users
+ggplot(summary_users, aes(x = factor(Year), y = TotalUsers, fill = Device)) +
+  geom_col(position = "dodge") +
+  labs(title = "Total Users by Device and Year", x = "Year", y = "Total Users", fill = "Device") +
+  theme_minimal()
+
+# New Users
+ggplot(summary_users, aes(x = factor(Year), y = TotalNewUsers, fill = Device)) +
+  geom_col(position = "dodge") +
+  labs(title = "New Users by Device and Year", x = "Year", y = "New Users", fill = "Device") +
+  theme_minimal()
+
+```
+
+```{r}
+summary_conversion <- data %>%
+  mutate(
+    Device = data$Device,
+    YearMonth = paste0(Year, "-", sprintf("%02d", Month.of.the.year)),
+    ConversionRate = as.numeric(gsub("%", "", data$ConversionRate))
+  ) %>%
+  select(Device, YearMonth, ConversionRate)
+summary_conversion_clean <- summary_conversion %>%
+  filter(
+    !is.na(ConversionRate),
+    ConversionRate > 0.5,     # remove which one below 0.5
+    ConversionRate <= 100     # remove invalid data that is above 100
+  )
+
+top_6_devices <- summary_conversion_clean %>%
+  group_by(Device) %>%
+  summarise(AvgConversion = mean(ConversionRate, na.rm = TRUE)) %>%
+  arrange(desc(AvgConversion)) %>%
+  slice(1:6)
+
+print(top_6_devices)
+
+filtered_conversion_top6 <- summary_conversion_clean %>%
+  filter(Device %in% top_6_devices$Device)
+
+print(filtered_conversion_top6)
+```
+
+```{r}
+ggplot(summary_conversion, aes(x = ConversionRate)) +
+  geom_histogram(binwidth = 1, fill = "steelblue", color = "white") +
+  labs(
+    title = "Figure 2.2.1-1: Distribution of Conversion Rates Across Devices",
+    x = "Conversion Rate (%)",
+    y = "Number of Devices"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+#line chart
+ggplot(filtered_conversion_top6, aes(x = YearMonth, y = ConversionRate, color = Device, group = Device)) +
+  geom_line(linewidth = 1.2) +
+  geom_point() +
+  labs(
+    title = "Conversion Rate Trends of Top Devices",
+    x = "Month-Year",
+    y = "Conversion Rate (%)",
+    color = "Device"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+#bar chart
+ggplot(filtered_conversion_top6, aes(x = ConversionRate, y = YearMonth, fill = Device)) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "Conversion Rate by Device per Month-Year",
+    x = "Conversion Rate (%)",
+    y = "Month-Year",
+    fill = "Device"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+# Task 1c
+
+## Step 0 : Load library
+
+```{r}
+library(readr)  # For reading CSV files
+library(dplyr)  # For data manipulation
+library(ggplot2)  # For plotting
+library(GGally)
+```
+
+## Step 2 : Load data (already in previous task1b, 1a)
+
+## Step 3: Clean and Prepare Data
+
+```{r}
+# Clean data
+library(dplyr)
+
+data_cleaned <- data %>%
+  mutate(
+    BounceRate = as.numeric(gsub("%", "", Bounce.Rate)),
+    ConversionRate = as.numeric(gsub("%", "", ConversionRate)),
+    Transactions = as.numeric(Transactions),
+    Revenue = as.numeric(Revenue)
+  ) %>%
+  select(BounceRate, ConversionRate, Transactions, Revenue) %>%
+  filter(
+    !is.na(BounceRate),
+    !is.na(ConversionRate),
+    !is.na(Transactions),
+    !is.na(Revenue)
+  )
+```
+
+Heatmap
+
+```{r}
+
+
+cor_matrix <- cor(data_cleaned, use = "complete.obs")
+corrplot(cor_matrix, method = "color", addCoef.col = "black",
+         tl.cex = 0.9, number.cex = 0.8,
+         title = "Figure 2.3.1: Correlation Heatmap Between Key Metrics")
+```
+
+Step 4 : Relation
+
+```{r}
+df_relationship <- data_cleaned %>%
+  select(BounceRate, ConversionRate, `Revenue`, `Transactions`)
+
+cor_matrix <- round(cor(df_relationship, use = "complete.obs"), 2)
+
+cor_df <- as.data.frame(cor_matrix) %>%
+  mutate(Var1 = rownames(.)) %>%
+  pivot_longer(cols = -Var1, names_to = "Var2", values_to = "Correlation")
+
+
+ggplot(cor_df, aes(x = Var1, y = Var2, fill = Correlation)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = Correlation), color = "black", size = 4) +
+  scale_fill_gradient2(low = "red", mid = "white", high = "green",
+                       midpoint = 0, limit = c(-1, 1), space = "Lab",
+                       name = "Correlation") +
+  labs(title = "Heatmap: Bounce Rate vs Conversion, Transactions, Revenue",
+       x = "", y = "") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+library(ggplot2)
+
+# Bounce Rate vs Conversion Rate
+ggplot(data_cleaned, aes(x = BounceRate, y = ConversionRate)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Figure 2.3.3: Bounce Rate vs Conversion Rate")
+
+# Conversion Rate vs Revenue
+ggplot(data_cleaned, aes(x = ConversionRate, y = Revenue)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Figure 2.3.4: Conversion Rate vs Revenue")
+
+# Transactions vs Revenue
+ggplot(data_cleaned, aes(x = Transactions, y = Revenue)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Figure 2.3.5: Transactions vs Revenue")
+
+# Bounce Rate vs Revenue
+ggplot(data_cleaned, aes(x = BounceRate, y = Revenue)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Figure 2.3.2: Bounce Rate vs Revenue")
+```
+
+## Step 3 : Calculate correlation 
+
+```{r}
+cor(data$BounceRate, data$ConversionRate, use = "complete.obs")
+cor(data$Transactions, data$Revenue, use = "complete.obs")
+cor(data$ConversionRate, data$Revenue, use = "complete.obs")
+```
+
+# Task 2d
+
+```{r}
+# Load libraries
+library(tidyverse)
+library(knitr)
+library(e1071)
+# Load data
+data <- read.csv("../data/diabetes.csv")
+
+# Descriptive statistics
+desc_stats <- data %>%
+  summarise(across(everything(), list(
+    mean = ~mean(., na.rm = TRUE),
+    median = ~median(., na.rm = TRUE),
+    sd = ~sd(., na.rm = TRUE),
+    var = ~var(., na.rm = TRUE)
+  ), .names = "{.col}_{.fn}"))
+desc_table_long <- desc_stats %>%
+  pivot_longer(cols = everything(),
+               names_to = c("Variable", "Stat"),
+               names_sep = "_") %>%
+  pivot_wider(names_from = Stat, values_from = value)
+
+# View the statistics
+kable(desc_table_long, caption = "Table 3.1: Descriptive Statistics Before Cleaning")
+print(desc_table_long)
+
+# Plot histograms before cleaning
+for (col in names(data)) {
+  if (is.numeric(data[[col]])) {
+    p <- ggplot(data, aes(x = !!sym(col))) +
+      geom_histogram(bins = 30, fill = "steelblue", color = "white") +
+      labs(title = paste("Histogram of", col, "before cleaning"), x = col, y = "Count") +
+      theme_minimal()
+    
+    print(p)  # in biểu đồ
+  }
+}
+```
+
+```{r}
+library(gridExtra)  # để gộp biểu đồ
+
+# Gộp biểu đồ
+plot_list <- list()
+
+for (col in names(data)) {
+  if (is.numeric(data[[col]])) {
+    p <- ggplot(data, aes(x = !!sym(col))) +
+      geom_histogram(bins = 30, fill = "steelblue", color = "white") +
+      labs(title = paste("Histogram of", col, "before cleaning")) +
+      theme_minimal() +
+      theme(plot.title = element_text(size = 7))
+    plot_list[[col]] <- p
+  }
+}
+
+# Hiển thị 4 biểu đồ/lần
+grid.arrange(grobs = plot_list[1:4], ncol = 2)
+grid.arrange(grobs = plot_list[5:8], ncol = 2)
+```
+
+# Task 2e
+
+note : số 0 nhiều
+
+```{r}
+data_d <- read.csv("../data/diabetes.csv")
+summary(data_d)
+data_d
+```
+
+```{r}
+sum(data_d$Glucose == 0)
+sum(data_d$BloodPressure == 0)
+sum(data_d$BMI == 0)
+sum(data_d$Insulin == 0)
+sum(data_d$Pregnancies == 0)
+sum(data_d$SkinThickness == 0)
+
+colSums(is.na(data))
+```
+
+```{r}
+
+
+# Độ lệch của Insulin (sau khi bỏ 0)
+skewness(data_d$Insulin[data_d$Insulin != 0])
+
+skewness(data_d$BMI[data_d$BMI != 0])
+skewness(data_d$Glucose[data_d$Glucose != 0])
+#≈ 0 → phân phối chuẩn → có thể dùng mean
+
+#1 hoặc < -1 → lệch nặng → dùng median
+
+#0.5 – 1 → lệch nhẹ
+```
+
+```{r}
+# Thay 0 bằng median trong cột Insulin
+median_insulin <- median(data_d$Insulin[data_d$Insulin != 0], na.rm = TRUE)
+data_d$Insulin[data_d$Insulin == 0] <- median_insulin
+
+# Thay 0 bằng median trong cột SkinThickness
+median_skin <- median(data_d$SkinThickness[data_d$SkinThickness != 0], na.rm = TRUE)
+data_d$SkinThickness[data_d$SkinThickness == 0] <- median_skin
+
+median_glucose <- median(data_d$Glucose[data$Glucose != 0], na.rm = TRUE)
+data_d$Glucose[data_d$Glucose == 0] <- median_glucose
+
+median_blood_pressure <- median(data_d$BloodPressure[data_d$BloodPressure != 0], na.rm = TRUE)
+data_d$BloodPressure[data_d$BloodPressure == 0] <- median_blood_pressure
+
+median_pregnancies <- median(data_d$Pregnancies[data_d$Pregnancies != 0], na.rm = TRUE)
+data_d$Pregnancies[data_d$Pregnancies == 0] <- median_pregnancies
+
+median_bmi <- median(data_d$BMI[data_d$BMI] != 0, na.rm = TRUE)
+data_d$BMI[data_d$BMI == 0] <- median_bmi
+```
+
+```{r}
+sum(data_d$Glucose == 0)
+sum(data_d$BloodPressure == 0)
+sum(data_d$BMI == 0)
+sum(data_d$Insulin == 0)
+sum(data_d$Pregnancies == 0)
+sum(data_d$SkinThickness == 0)
+
+
+data_d
+
+sum(data_d$BMI < 10)
+
+data_d$BMI[data_d$BMI < 10] <- NA
+data_d
+
+bmi_median <- median(data$BMI, na.rm = TRUE)
+data_d$BMI[is.na(data_d$BMI)] <- bmi_median
+```
+
+```{r}
+library(knitr)
+
+desc_stats <- data_d %>%
+  summarise(across(everything(), list(
+    mean = ~mean(., na.rm = TRUE),
+    median = ~median(., na.rm = TRUE),
+    sd = ~sd(., na.rm = TRUE),
+    var = ~var(., na.rm = TRUE)
+  ), .names = "{.col}_{.fn}"))
+desc_table_long <- desc_stats %>%
+  pivot_longer(cols = everything(),
+               names_to = c("Variable", "Stat"),
+               names_sep = "_") %>%
+  pivot_wider(names_from = Stat, values_from = value)
+
+# View the statistics
+kable(desc_table_long, caption = "Table 3.2: Descriptive Statistics After Cleaning")
+print(desc_table_long)
+
+
+```
+
+```{r}
+library(gridExtra)  
+library(tidyverse)
+plot_list <- list()
+
+for (col in names(data_d)) {
+  if (is.numeric(data_d[[col]])) {
+    p <- ggplot(data_d, aes(x = !!sym(col))) +
+      geom_histogram(bins = 30, fill = "steelblue", color = "white") +
+      labs(title = paste("Histogram of", col, "after cleaning")) +
+      theme_minimal() +
+      theme(plot.title = element_text(size = 7))
+    plot_list[[col]] <- p
+  }
+}
+
+# Hiển thị 4 biểu đồ/lần
+grid.arrange(grobs = plot_list[1:4], ncol = 2)
+grid.arrange(grobs = plot_list[5:8], ncol = 2)
+```

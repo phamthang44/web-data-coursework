@@ -1,0 +1,2 @@
+"0","data <- read.csv(""../data/Web Analytic_Dataset.csv"")"
+"0","data"

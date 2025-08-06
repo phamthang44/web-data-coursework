@@ -1,0 +1,24 @@
+"0","sum(data_d$Glucose == 0)"
+"1","[1] 5
+"
+"0","sum(data_d$BloodPressure == 0)"
+"1","[1] 35
+"
+"0","sum(data_d$BMI == 0)"
+"1","[1] 11
+"
+"0","sum(data_d$Insulin == 0)"
+"1","[1] 374
+"
+"0","sum(data_d$Pregnancies == 0)"
+"1","[1] 111
+"
+"0","sum(data_d$SkinThickness == 0)"
+"1","[1] 227
+"
+"0","colSums(is.na(data))"
+"1","             Pregnancies                  Glucose            BloodPressure            SkinThickness                  Insulin 
+                       0                        0                        0                        0                        0 
+                     BMI DiabetesPedigreeFunction                      Age                  Outcome 
+                       0                        0                        0                        0 
+"

@@ -1,0 +1,11 @@
+"0",""
+"0",""
+"0","cor_matrix <- cor(data_cleaned, use = ""complete.obs"")"
+"0","corrplot(cor_matrix, method = ""color"", addCoef.col = ""black"","
+"0","         tl.cex = 0.9, number.cex = 0.8,"
+"0","         title = ""Figure 2.3.1: Correlation Heatmap Between Key Metrics"")"
+"2","G1;H1;Errorh in corrplot(cor_matrix, method = ""color"", addCoef.col = ""black"",  : 
+  could not find function ""corrplot""
+Error during wrapup: not that many frames on the stack
+Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+g"

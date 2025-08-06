@@ -1,0 +1,5 @@
+"0",""
+"0","filtered_conversion_top6 <- summary_conversion_clean %>%"
+"0","  filter(Device %in% top_6_devices$Device)"
+"0",""
+"0","print(filtered_conversion_top6)"

@@ -1,0 +1,7 @@
+"0","library(ggplot2)"
+"0",""
+"0","# Bounce Rate vs Conversion Rate"
+"0","ggplot(data_cleaned, aes(x = BounceRate, y = ConversionRate)) +"
+"0","  geom_point(alpha = 0.5) +"
+"0","  geom_smooth(method = ""lm"", se = FALSE) +"
+"0","  labs(title = ""Figure 2.3.3: Bounce Rate vs Conversion Rate"")"

@@ -1,0 +1,8 @@
+"0","ggplot(summary_conversion, aes(x = ConversionRate)) +"
+"0","  geom_histogram(binwidth = 1, fill = ""steelblue"", color = ""white"") +"
+"0","  labs("
+"0","    title = ""Figure 2.2.1-1: Distribution of Conversion Rates Across Devices"","
+"0","    x = ""Conversion Rate (%)"","
+"0","    y = ""Number of Devices"""
+"0","  ) +"
+"0","  theme_minimal()"
